@@ -1,0 +1,130 @@
+﻿@using WarehouseMvc.Models
+@model IEnumerable<WarehouseMvc.Models.StockMovement>
+
+@{
+    ViewData["Title"] = "Inventory Movements";
+
+    var totalMovements = Model?.Count() ?? 0;
+    var totalIn = Model?.Count(m => m.Type == MovementType.In) ?? 0;
+    var totalOut = Model?.Count(m => m.Type == MovementType.Out) ?? 0;
+}
+
+<div class="container mt-4">
+
+    <!-- Header + action button -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="fw-semibold mb-1">@ViewData["Title"]</h2>
+            <p class="text-muted mb-0">
+                Track stock going <strong>in</strong>, <strong>out</strong>, and moving between locations.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Record Movement
+        </a>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 bg-white">
+                <div class="text-muted small text-uppercase">Total Movements</div>
+                <div class="h4 mb-0">@totalMovements</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 bg-white">
+                <div class="text-muted small text-uppercase">Stock In</div>
+                <div class="h4 mb-0 text-success">@totalIn</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 bg-white">
+                <div class="text-muted small text-uppercase">Stock Out</div>
+                <div class="h4 mb-0 text-danger">@totalOut</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table card -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item</th>
+                            <th class="text-center">Type</th>
+                            <th class="text-center">Quantity</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Timestamp</th>
+                            <th>Note</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var movement in Model.OrderByDescending(m => m.TimestampUtc))
+                            {
+                                var badgeClass = movement.Type == MovementType.In
+                                ? "success"
+                                : movement.Type == MovementType.Out
+                                ? "danger"
+                                : "secondary";
+                                <tr>
+                                    <td>@movement.Item?.Name</td>
+
+                                    <td class="text-center">
+                                        <span class="badge bg-@badgeClass">
+                                            @movement.Type
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center fw-semibold">
+                                        @movement.Quantity
+                                    </td>
+
+                                    <td>@movement.FromLocation?.Name</td>
+                                    <td>@movement.ToLocation?.Name</td>
+
+                                    <td>
+                                        @movement.TimestampUtc.ToLocalTime().ToString("g")
+                                    </td>
+
+                                    <td>@movement.Note</td>
+
+                                    <td class="text-end">
+                                        <a asp-action="Details" asp-route-id="@movement.Id"
+                                           class="btn btn-sm btn-outline-secondary me-1">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@movement.Id"
+                                           class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@movement.Id"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    No movements recorded yet. Click
+                                    <strong>Record Movement</strong> to add your first entry.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

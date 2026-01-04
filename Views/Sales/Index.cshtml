@@ -1,0 +1,107 @@
+﻿@model IEnumerable<WarehouseMvc.Models.Sale>
+
+@{
+    ViewData["Title"] = "Sales Report";
+
+    var totalRevenue = (decimal)(ViewBag.TotalRevenue ?? 0m);
+    var totalCost = (decimal)(ViewBag.TotalCost ?? 0m);
+    var totalProfit = (decimal)(ViewBag.TotalProfit ?? 0m);
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="fw-semibold mb-1">Sales Report</h2>
+            <p class="text-muted mb-0">
+                Overview of revenue, cost and profit from recorded sales.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Record Sale
+        </a>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 bg-white">
+                <div class="text-muted small text-uppercase">Total Revenue</div>
+                <div class="h4 mb-0 text-success">
+                    @totalRevenue.ToString("C")
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 bg-white">
+                <div class="text-muted small text-uppercase">Total Cost</div>
+                <div class="h4 mb-0 text-danger">
+                    @totalCost.ToString("C")
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 bg-white">
+                <div class="text-muted small text-uppercase">Net Profit</div>
+                <div class="h4 mb-0 @(totalProfit >= 0 ? "text-success" : "text-danger")">
+                    @totalProfit.ToString("C")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Item</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Revenue</th>
+                            <th class="text-end">Cost</th>
+                            <th class="text-end">Profit</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var s in Model)
+                            {
+                                // Treat Revenue and Cost as per-unit values
+                                var rowRevenue = s.Revenue * s.Quantity;
+                                var rowCost = s.Cost * s.Quantity;
+                                var rowProfit = rowRevenue - rowCost;
+                                var profitClass = rowProfit >= 0 ? "text-success" : "text-danger";
+
+                                <tr>
+                                    <td>@s.Date.ToLocalTime().ToString("g")</td>
+                                    <td>@(s.Item?.Name ?? "-")</td>
+                                    <td class="text-center">@s.Quantity</td>
+                                    <td class="text-end">@rowRevenue.ToString("C")</td>
+                                    <td class="text-end">@rowCost.ToString("C")</td>
+                                    <td class="text-end fw-semibold @profitClass">
+                                        @rowProfit.ToString("C")
+                                    </td>
+                                    <td>@s.Note</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    No sales recorded yet. Click <strong>Record Sale</strong> to add your first one.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

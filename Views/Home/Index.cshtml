@@ -1,0 +1,257 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+
+    decimal todaySales = (decimal)(ViewBag.TodaySales ?? 0m);
+    decimal totalProfit = (decimal)(ViewBag.TotalProfit ?? 0m);
+    int movementsToday = (int)(ViewBag.MovementsToday ?? 0);
+    int movementsThisWeek = (int)(ViewBag.MovementsWeek ?? 0);
+}
+
+<style>
+    .dashboard-wrapper {
+        background-color: #f8f9fb;
+        border-radius: 16px;
+        padding: 2.5rem 2rem 3rem;
+        margin-top: 2.5rem;
+    }
+
+    .dash-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+        }
+
+    .dash-card-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255,255,255,0.9);
+        color: #6e4a7c;
+        font-size: 1.3rem;
+    }
+
+    .dash-card-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: .25rem;
+    }
+
+    .dash-card-text {
+        font-size: .9rem;
+        color: #6c757d;
+    }
+
+    .dash-card-link {
+        font-size: .9rem;
+        font-weight: 500;
+        color: #6e4a7c;
+        text-decoration: none;
+    }
+
+        .dash-card-link i {
+            font-size: .85rem;
+        }
+</style>
+
+<div class="container">
+    <div class="dashboard-wrapper">
+
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-5 fw-semibold">Welcome to StockFlow</h1>
+            <p class="lead mb-0">
+                Navigate your inventory with precision
+            </p>
+            <p class="text-muted">
+                Use the shortcuts and metrics below to manage your <strong>items</strong>,
+                <strong>locations</strong>, and <strong>inventory movements</strong>.
+            </p>
+
+        </div>
+
+        <!-- KPI CARDS ROW -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card dash-card h-100">
+                    <div class="card-body">
+                        <div class="dash-card-title">Today’s Sales</div>
+                        <div class="h4 mb-0 text-success">
+                            @todaySales.ToString("C")
+                        </div>
+                        <div class="dash-card-text mt-1">
+                            Total revenue from sales recorded today.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="card dash-card h-100">
+                    <div class="card-body">
+                        <div class="dash-card-title">Total Profit (All Time)</div>
+                        <div class="h4 mb-0 @(totalProfit >= 0 ? "text-success" : "text-danger")">
+                            @totalProfit.ToString("C")
+                        </div>
+                        <div class="dash-card-text mt-1">
+                            Cumulative profit across all sales.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="card dash-card h-100">
+                    <div class="card-body">
+                        <div class="dash-card-title">Movements Today</div>
+                        <div class="h4 mb-0">@movementsToday</div>
+                        <div class="dash-card-text mt-1">
+                            Stock movements recorded today.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="card dash-card h-100">
+                    <div class="card-body">
+                        <div class="dash-card-title">Movements (Last 7 Days)</div>
+                        <div class="h4 mb-0">@movementsThisWeek</div>
+                        <div class="dash-card-text mt-1">
+                            Total movements in the last week.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     
+        <div class="row g-4 justify-content-center">
+
+            <!-- Manage Items -->
+            <div class="col-md-3 col-sm-6">
+                <a asp-controller="Items" asp-action="Index" class="text-decoration-none text-reset">
+                    <div class="card dash-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="dash-card-icon me-3">
+                                    <i class="bi bi-box-seam"></i>
+                                </div>
+                                <div>
+                                    <div class="dash-card-title">Manage Items</div>
+                                    <div class="dash-card-text">
+                                        Create, edit, and organize all stock items in your warehouse.
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="dash-card-link">
+                                Go to Items <i class="bi bi-arrow-right-short"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Manage Locations -->
+            <div class="col-md-3 col-sm-6">
+                <a asp-controller="Locations" asp-action="Index" class="text-decoration-none text-reset">
+                    <div class="card dash-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="dash-card-icon me-3">
+                                    <i class="bi bi-geo-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="dash-card-title">Manage Locations</div>
+                                    <div class="dash-card-text">
+                                        Define shelves, rooms, and storage areas for your stock.
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="dash-card-link">
+                                Go to Locations <i class="bi bi-arrow-right-short"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Inventory Movements -->
+            <div class="col-md-3 col-sm-6">
+                <a asp-controller="StockMovements" asp-action="Index" class="text-decoration-none text-reset">
+                    <div class="card dash-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="dash-card-icon me-3">
+                                    <i class="bi bi-arrow-left-right"></i>
+                                </div>
+                                <div>
+                                    <div class="dash-card-title">Inventory Movements</div>
+                                    <div class="dash-card-text">
+                                        Record stock in, stock out, and transfers between locations.
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="dash-card-link">
+                                View Movements <i class="bi bi-arrow-right-short"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Reports dropdown -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card dash-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="dash-card-icon me-3">
+                                <i class="bi bi-bar-chart"></i>
+                            </div>
+                            <div>
+                                <div class="dash-card-title">Reports</div>
+                                <div class="dash-card-text">
+                                    Monitor low stock and current balances across all locations.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle px-3"
+                                    type="button" data-bs-toggle="dropdown">
+                                Open Reports
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Reports" asp-action="StockBalances">
+                                        Stock Balances
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Reports" asp-action="LowStock">
+                                        Low Stock Alerts
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Sales" asp-action="Index">
+                                        Sales Report
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

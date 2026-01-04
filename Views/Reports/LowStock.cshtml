@@ -1,0 +1,89 @@
+﻿@using System.Linq
+@using WarehouseMvc.Models
+@model IEnumerable<LowStockRow>
+
+@{
+    ViewData["Title"] = "Low Stock Alerts";
+
+    var list = Model?.ToList() ?? new List<LowStockRow>();
+
+    // Adjust property names here if yours are different
+    var totalLowItems = list.Count;
+    var criticalCount = list.Count(r => r.Quantity <= r.ReorderLevel);
+}
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="fw-semibold mb-1">Low Stock Alerts</h2>
+            <p class="text-muted mb-0">
+                Items that are at or below their minimum stock level and may need replenishment.
+            </p>
+        </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 bg-white">
+                <div class="text-muted small text-uppercase">Items Below Threshold</div>
+                <div class="h4 mb-0">@totalLowItems</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 bg-white">
+                <div class="text-muted small text-uppercase">Critical (at or below reorder)</div>
+                <div class="h4 mb-0 text-danger">@criticalCount</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table card -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item</th>
+                            <th>Location</th>
+                            <th class="text-end">On Hand</th>
+                            <th class="text-end">Reorder Level</th>
+                            <th class="text-end">Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (list.Any())
+                        {
+                            foreach (var row in list
+                            .OrderBy(r => r.ItemName)
+                            .ThenBy(r => r.LocationName))
+                            {
+                                var diff = row.Quantity - row.ReorderLevel;
+                                var rowClass = diff <= 0 ? "table-danger" : "table-warning";
+
+                                <tr class="@rowClass">
+                                    <td>@row.ItemName</td>
+                                    <td>@row.LocationName</td>
+                                    <td class="text-end fw-semibold">@row.Quantity</td>
+                                    <td class="text-end">@row.ReorderLevel</td>
+                                    <td class="text-end">@diff</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    No items are currently below their low-stock threshold.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
